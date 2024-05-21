@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="boid5.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1, h2, h3, p, #sliders {
+            margin: 20px;
+        }
+        #canvas-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #sliders {
+            display: flex;
+            flex-direction: column;
+            width: 250px;
+        }
+        #sliders p {
+            margin: 5px 0;
+        }
+        #sliders h2 {
+            margin-top: 20px;
+        }
+    </style>
+    <title>Parallel Pursuit & Boids</title>
+</head>
+<body>
+    <h1>Parallel Pursuit & Boids</h1>
+    <h2>Mathematical Description</h2>
+    <p>Parallel pursuit involves a pursuer maintaining a constant bearing angle with its target. Let <b>R(t)</b> be the range vector from the pursuer to the prey at time <b>t</b>:</p>
+    <p>
+        \[
+        \mathbf{R}(t) = \mathbf{P}_{prey}(t) - \mathbf{P}_{pursuer}(t)
+        \]
+    </p>
+    <p>The pursuer aims to keep the angle \( \theta(t) \) between \( \mathbf{R}(t) \) and its heading direction \( \mathbf{H}(t) \) constant:</p>
+    <p>
+        \[
+        \theta(t) = \arccos \left( \frac{\mathbf{R}(t) \cdot \mathbf{H}(t)}{|\mathbf{R}(t)||\mathbf{H}(t)|} \right)
+        \]
+    </p>
+    <p>The velocity of the pursuer \( \mathbf{V}_{pursuer}(t) \) is updated to steer towards the prey:</p>
+    <p>
+        \[
+        \mathbf{V}_{pursuer}(t) = \mathbf{V}_{prey}(t) + k \left( \mathbf{R}(t) \times \mathbf{\hat{n}} \right)
+        \]
+    </p>
+    <p>where \( k \) is a gain factor and \( \mathbf{\hat{n}} \) is a unit vector perpendicular to the plane formed by \( \mathbf{R}(t) \) and \( \mathbf{V}_{prey}(t) \).</p>
+    <h3>Boids Dynamics</h3>
+    <p>Boids exhibit three basic behaviors:</p>
+    <ul>
+        <li><b>Separation</b>: Avoid crowding neighbors. The steering force is:</li>
+        <p>
+            \[
+            \mathbf{F}_{sep} = \sum_{i=1}^{N} \frac{\mathbf{R}_{i}}{|\mathbf{R}_{i}|^2}
+            \]
+        </p>
+        <li><b>Alignment</b>: Steer towards the average heading of neighbors. The steering force is:</li>
+        <p>
+            \[
+            \mathbf{F}_{ali} = \frac{1}{N} \sum_{i=1}^{N} \mathbf{V}_{i} - \mathbf{V}_{boid}
+            \]
+        </p>
+        <li><b>Cohesion</b>: Steer towards the average position of neighbors. The steering force is:</li>
+        <p>
+            \[
+            \mathbf{F}_{coh} = \frac{1}{N} \sum_{i=1}^{N} \mathbf{P}_{i} - \mathbf{P}_{boid}
+            \]
+        </p>
+    </ul>
+    <p>The total acceleration \( \mathbf{A}_{boid} \) is the sum of these forces:</p>
+    <p>
+        \[
+        \mathbf{A}_{boid} = c_{sep} \mathbf{F}_{sep} + c_{ali} \mathbf{F}_{ali} + c_{coh} \mathbf{F}_{coh}
+        \]
+    </p>
+    <div id="canvas-container">
+        <div id="sliders">
+            <h2>Boid Parameters</h2>
+            <p>Boid Max Force</p>
+            <div id="boid-max-force"></div>
+            <p>Boid Max Speed</p>
+            <div id="boid-max-speed"></div>
+            <p>Perception Radius</p>
+            <div id="perception-radius"></div>
+
+            <h2>Predator Parameters</h2>
+            <p>Predator Max Speed</p>
+            <div id="predator-max-speed"></div>
+            <p>Predator Max Force</p>
+            <div id="predator-max-force"></div>
+            <p>Kill Time (ms)</p>
+            <div id="kill-time"></div>
+
+            <p>Target Boid</p>
+            <div id="target-boid-selector"></div>
+        </div>
+        <div id="canvas"></div>
+    </div>
+</body>
+</html>
+
