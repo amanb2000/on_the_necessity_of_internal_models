@@ -10,6 +10,7 @@ let boidMaxForceSlider, boidMaxSpeedSlider, perceptionRadiusSlider;
 
 // Sliders for predator parameters
 let predatorMaxSpeedSlider, predatorMaxForceSlider, killTimeSlider;
+let predatorPerceptionRadiusSlider; 
 
 // Slider for number of boids
 let numBoidsSlider;
@@ -19,17 +20,19 @@ function setup() {
     canvas.parent('canvas');
 
     // Create sliders for boid parameters
-    boidMaxForceSlider = createSlider(0.1, 1.0, 0.2, 0.01).parent('boid-max-force');
-    boidMaxSpeedSlider = createSlider(1, 5, 3, 0.1).parent('boid-max-speed');
-    perceptionRadiusSlider = createSlider(10, 100, 50, 1).parent('perception-radius');
+    boidMaxForceSlider = createSlider(0.1, 5, 0.2, 0.01).parent('boid-max-force');
+    boidMaxSpeedSlider = createSlider(1, 25, 3, 0.1).parent('boid-max-speed');
+    perceptionRadiusSlider = createSlider(10, 500, 50, 1).parent('perception-radius');
+    predatorPerceptionRadiusSlider = createSlider(10, 500, 100, 1).parent('predator-perception-radius')
 
     // Create sliders for predator parameters
     predatorMaxSpeedSlider = createSlider(1, 10, 5, 0.1).parent('predator-max-speed');
-    predatorMaxForceSlider = createSlider(0.1, 1.0, 0.5, 0.01).parent('predator-max-force');
-    killTimeSlider = createSlider(100, 5000, 1000, 100).parent('kill-time');
+    predatorMaxForceSlider = createSlider(0.1, 5.0, 0.5, 0.01).parent('predator-max-force');
+    // kill time starts 
+    killTimeSlider = createSlider(1, 5000, 100, 10).parent('kill-time');
 
     // Create slider for number of boids
-    numBoidsSlider = createSlider(1, 200, 50, 1).parent('num-boids');
+    numBoidsSlider = createSlider(1, 500, 50, 1).parent('num-boids');
 
     // Initialize boids
     for (let i = 0; i < numBoids; i++) {
@@ -64,6 +67,7 @@ function draw() {
     text(`Predator Max Force: ${predatorMaxForceSlider.value()}`, 10, height - 140);
     text(`Kill Time (ms): ${killTimeSlider.value()}`, 10, height - 120);
     text(`Number of Boids: ${numBoidsSlider.value()}`, 10, height - 100);
+    text(`Predator Perception Rad: ${predatorPerceptionRadiusSlider.value()}`, 10, height - 80);
 
     // Update the number of boids
     adjustBoids(numBoidsSlider.value());
@@ -88,6 +92,11 @@ function draw() {
     stroke(0, 0, 255, 100);
     ellipse(targetBoid.position.x, targetBoid.position.y, perceptionRadiusSlider.value() * 2);
 
+    // display predator perception radius
+    noFill();
+    stroke(255, 0, 0, 100);
+    ellipse(targetBoid.position.x, targetBoid.position.y, predatorPerceptionRadiusSlider.value() * 2);
+
     // Plot velocity vector of the predator
     stroke(255, 0, 0);
     line(predator.position.x, predator.position.y, predator.position.x + predator.velocity.x * 10, predator.position.y + predator.velocity.y * 10);
@@ -98,7 +107,7 @@ function draw() {
 
     // Check if the predator is within the radius of the prey
     let distance = dist(predator.position.x, predator.position.y, targetBoid.position.x, targetBoid.position.y);
-    if (distance < perceptionRadiusSlider.value()) {
+    if (distance < 20) {
         killTimer += deltaTime;
         if (killTimer > killTimeSlider.value()) {
             console.log(`Boid ${targetBoid.idx} caught by predator!`);
@@ -237,7 +246,7 @@ class Boid {
     }
 
     avoid(predator) {
-        let perceptionRadius = 100;
+        let perceptionRadius = predatorPerceptionRadiusSlider.value();
         let steering = createVector();
         let d = dist(this.position.x, this.position.y, predator.position.x, predator.position.y);
 
@@ -255,6 +264,23 @@ class Boid {
         fill(r, g, b);
         stroke(200);
         ellipse(this.position.x, this.position.y, 10, 10);
+	    // Draw the arrow
+	    let angle = this.velocity.heading(); // Get the angle of the velocity vector
+	    push();
+	    translate(this.position.x, this.position.y); // Move to the object's position
+	    rotate(angle); // Rotate to the direction of the velocity
+
+	    // Draw the line for the arrow
+	    stroke(0);
+	    line(0, 0, this.velocity.mag(), 0);
+
+	    // Draw the triangle for the arrowhead
+	    fill(0);
+	    let arrowSize = 7;
+	    translate(this.velocity.mag(), 0); // Move to the end of the line
+	    triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
+
+	    pop();
     }
 
     edges() {
@@ -291,6 +317,23 @@ class Predator {
         fill(255, 0, 0);
         stroke(0);
         ellipse(this.position.x, this.position.y, 20, 20);
+	    // Draw the arrow
+	    let angle = this.velocity.heading(); // Get the angle of the velocity vector
+	    push();
+	    translate(this.position.x, this.position.y); // Move to the object's position
+	    rotate(angle); // Rotate to the direction of the velocity
+
+	    // Draw the line for the arrow
+	    stroke(0);
+	    line(0, 0, this.velocity.mag(), 0);
+
+	    // Draw the triangle for the arrowhead
+	    fill(0);
+	    let arrowSize = 15;
+	    translate(this.velocity.mag(), 0); // Move to the end of the line
+	    triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
+
+	    pop();
     }
 
     edges() {

@@ -29,12 +29,22 @@
             margin-top: 20px;
         }
     </style>
-    <title>Parallel Pursuit & Boids</title>
+    <title>Parallel Navigation & Boids</title>
 </head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SP4QQR0XE3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SP4QQR0XE3');
+</script>
 <body>
-    <h1>Parallel Pursuit & Boids</h1>
+    <h1>Parallel Navigation & Boids</h1>
+    <p><a href="https://aman-bhargava.com/">Aman</a>, May 2024.</p>
     <h2>Mathematical Description</h2>
-    <p>Parallel pursuit involves a pursuer maintaining a constant bearing angle with its target. Let <b>R(t)</b> be the range vector from the pursuer to the prey at time <b>t</b>:</p>
+    <p>Parallel navigation involves a pursuer maintaining a constant bearing angle with its target. Let <b>R(t)</b> be the range vector from the pursuer to the prey at time <b>t</b>:</p>
     <p>
         \[
         \mathbf{R}(t) = \mathbf{P}_{prey}(t) - \mathbf{P}_{pursuer}(t)
@@ -53,7 +63,10 @@
         \]
     </p>
     <p>where \( k \) is a gain factor and \( \mathbf{\hat{n}} \) is a unit vector perpendicular to the plane formed by \( \mathbf{R}(t) \) and \( \mathbf{V}_{prey}(t) \).</p>
+    <p>Apparently dragonflies <a href="https://www.nature.com/articles/nature14045">don't do parallel pursuit</a>.</p>
+
     <h3>Boids Dynamics</h3>
+    <p>Just having 1 prey and 1 predator gets lonely (see <a href="parallel_pursuit.html">parallel pursuit</a>). So let's add a flock of <a href="https://en.wikipedia.org/wiki/Boids">boids</a>.</p>
     <p>Boids exhibit three basic behaviors:</p>
     <ul>
         <li><b>Separation</b>: Avoid crowding neighbors. The steering force is:</li>
@@ -90,6 +103,8 @@
             <div id="boid-max-speed"></div>
             <p>Perception Radius</p>
             <div id="perception-radius"></div>
+            <p>Predator Perception Radius</p>
+            <div id="predator-perception-radius"></div>
 
             <h2>Predator Parameters</h2>
             <p>Predator Max Speed</p>
